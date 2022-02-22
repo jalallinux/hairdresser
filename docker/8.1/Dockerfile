@@ -37,6 +37,7 @@ RUN apt-get update \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
     && apt-get update \
+    && apt-get install -y libuv1-dev \
     && apt-get install -y yarn \
     && apt-get install -y mysql-client \
     && apt-get install -y postgresql-client \
@@ -52,6 +53,9 @@ RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY php.ini /etc/php/8.1/cli/conf.d/99-sail.ini
+COPY php-extensions/cassandra-8.1/cassandra.so /usr/lib/php/20210902/
+COPY php-extensions/cassandra-8.1/libcassandra.so.2 /lib/x86_64-linux-gnu/
+COPY php-extensions/cassandra-8.1/libcassandra.so.2.16.2 /lib/x86_64-linux-gnu/
 RUN chmod +x /usr/local/bin/start-container
 
 EXPOSE 8000

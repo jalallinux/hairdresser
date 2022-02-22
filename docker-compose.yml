@@ -24,6 +24,7 @@ services:
         depends_on:
             - pgsql
             - redis
+
     pgsql:
         image: 'postgres:14'
         ports:
@@ -41,6 +42,7 @@ services:
             test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
             retries: 3
             timeout: 5s
+
     redis:
         image: 'redis:alpine'
         ports:
@@ -53,6 +55,29 @@ services:
             test: ["CMD", "redis-cli", "ping"]
             retries: 3
             timeout: 5s
+
+    scylla:
+        image: scylladb/scylla
+        container_name: scylla
+        ports:
+            - '9042:9042'
+        volumes:
+            - 'sail-scylla:/var/lib/scylla'
+
+    scylla-2:
+        image: scylladb/scylla
+        container_name: scylla-2
+        command: --seeds=scylla --smp 1 --memory 750M --overprovisioned 1
+        volumes:
+            - 'sail-scylla:/var/lib/scylla'
+
+    scylla-3:
+        image: scylladb/scylla
+        container_name: scylla-3
+        command: --seeds=scylla --smp 1 --memory 750M --overprovisioned 1
+        volumes:
+            - 'sail-scylla:/var/lib/scylla'
+
 networks:
     sail:
         driver: bridge
@@ -60,4 +85,6 @@ volumes:
     sail-pgsql:
         driver: local
     sail-redis:
+        driver: local
+    sail-scylla:
         driver: local
