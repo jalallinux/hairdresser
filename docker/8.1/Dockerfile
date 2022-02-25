@@ -33,11 +33,18 @@ RUN apt-get update \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g npm \
+    && npm install -g npm@latest \
+    && npm install -g pm2@latest \
+    && mkdir /var/www/.pm2 \
+    && chown -R www-data:www-data /var/www/.pm2 \
+    && runuser -u www-data /usr/lib/node_modules/pm2/bin/pm2 start  \
+    && runuser -u www-data /usr/lib/node_modules/pm2/bin/pm2 save \
+    && runuser -u www-data /usr/lib/node_modules/pm2/bin/pm2 startup \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
     && apt-get update \
     && apt-get install -y libuv1-dev \
+    && apt-get install -y nano \
     && apt-get install -y yarn \
     && apt-get install -y mysql-client \
     && apt-get install -y postgresql-client \
